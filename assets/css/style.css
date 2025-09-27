@@ -1,0 +1,9 @@
+/* Dentro del archivo assets/css/style.css */
+.auth-bg {
+    /* Sube de 'css/' a 'assets/', luego baja a 'images/' */
+    background-image: url('../images/auth-bg.jpg'); 
+    background-size: cover;
+    background-position: center;
+    /* Asegúrate de que esta línea esté, es la que da altura al contenedor */
+    min-height: 100vh;
+}

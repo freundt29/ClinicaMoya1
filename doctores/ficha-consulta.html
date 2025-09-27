@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Consulta Médica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="page-content p-5">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="mb-sm-0 font-size-18">Ficha de Consulta Médica</h4>
+                    <p class="text-muted">Registro de la atención, diagnóstico y plan de tratamiento.</p>
+                </div>
+            </div>
+
+            <!-- Información del Paciente (Simulada) -->
+            <div class="card mb-4 bg-light shadow-sm border-primary">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="fas fa-user-circle me-2"></i> Detalle de la Cita (ID: <span id="citaIdDisplay">CT001</span>)</h5>
+                    <div class="row">
+                        <div class="col-md-4"><strong>Paciente:</strong> Ana López</div>
+                        <div class="col-md-4"><strong>Fecha:</strong> 27/09/2025, 10:00 AM</div>
+                        <div class="col-md-4"><strong>Motivo:</strong> Control anual de Hipertensión</div>
+                    </div>
+                   
+                </div>
+            </div>
+
+            <!-- Formulario de Registro Clínico -->
+            <form method="POST" action="scripts/guardar_consulta.php" onsubmit="return confirm('¿Desea guardar el registro de la consulta? Esto actualizará el historial del paciente.');">
+                
+                <!-- Campo oculto para enviar el ID de la cita al servidor -->
+                <input type="hidden" name="cita_id" id="citaIdInput" value="CT001">
+                
+                <!-- 1. Sección de Anamnesis/Notas -->
+                <div class="card mb-4 shadow">
+                    <div class="card-header bg-secondary text-white">
+                        <i class="fas fa-file-medical-alt me-2"></i> Notas de la Consulta y Examen Físico
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="notasConsulta" class="form-label">Notas Subjetivas y Objetivas (S.O.A.P.)</label>
+                            <textarea class="form-control" id="notasConsulta" name="notas_consulta" rows="8" placeholder="Ej: Paciente refiere dolor... Examen físico: Tensión 120/80, Pulso 75, etc."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Sección de Diagnóstico -->
+                <div class="card mb-4 shadow">
+                    <div class="card-header bg-info text-white">
+                        <i class="fas fa-diagnoses me-2"></i> Diagnóstico
+                    </div>
+                    <div class="card-body">
+                        <label for="diagnostico" class="form-label">Diagnóstico Principal (Texto Libre)</label>
+                        <textarea class="form-control" id="diagnostico" name="diagnostico" rows="4" placeholder="Ej: Hipertensión Arterial no controlada (I10)"></textarea>
+                    </div>
+                </div>
+
+                <!-- 3. Sección de Tratamiento e Indicaciones -->
+                <div class="card mb-4 shadow">
+                    <div class="card-header bg-success text-white">
+                        <i class="fas fa-prescription-bottle-alt me-2"></i> Tratamiento e Indicaciones
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="tratamiento" class="form-label">Plan de Tratamiento y Prescripción</label>
+                            <textarea class="form-control" id="tratamiento" name="tratamiento" rows="6" placeholder="Ej: Recetar Losartán 50mg, 1 tableta diaria."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="indicaciones" class="form-label">Indicaciones y Plan de Seguimiento</label>
+                            <textarea class="form-control" id="indicaciones" name="indicaciones" rows="4" placeholder="Ej: Control en 4 semanas. Dieta baja en sodio y ejercicio 3 veces por semana."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón de Guardar y Cerrar -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg shadow">
+                        <i class="fas fa-save me-2"></i> Guardar Consulta y Regresar a Agenda
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Script para obtener el ID de la cita de la URL y cargarlo en el formulario.
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const citaId = urlParams.get('id');
+            
+            if (citaId) {
+                // Actualiza el texto visible y el valor oculto del formulario
+                document.getElementById('citaIdDisplay').textContent = citaId;
+                document.getElementById('citaIdInput').value = citaId;
+            }
+        });
+    </script>
+</body>
+</html>

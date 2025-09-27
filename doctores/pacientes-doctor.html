@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pacientes del Día</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="page-content p-5">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="mb-sm-0 font-size-18">Mi Agenda de Pacientes: Hoy, 27/09/2025</h4>
+                    <p class="text-muted">Gestione el flujo de sus citas pendientes para el día de hoy.</p>
+                </div>
+            </div>
+
+            <!-- Panel de Búsqueda de Expedientes (Historial Clínico) -->
+            <form method="GET" action="#">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3"><i class="fas fa-search me-2"></i> Buscar Expediente Anterior</h5>
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <input type="search" class="form-control" name="paciente_buscado" id="buscarExpediente" placeholder="Buscar por Nombre o Cédula de paciente anterior...">
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-secondary w-100" title="Busca y recarga la página para mostrar los resultados">
+                                    <i class="fas fa-folder-open me-2"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            Citas Pendientes de Atención
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="tablaPacientesDia" class="table table-bordered table-hover w-100">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID Cita</th>
+                                            <th>Hora</th>
+                                            <th>Paciente</th>
+                                            <th>Motivo Cita</th>
+                                            <th>Acciones Clínicas</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- CITA 1: Lista para iniciar la consulta -->
+                                        <tr>
+                                            <td>CT001</td>
+                                            <td>10:00 AM</td>
+                                            <td>Ana López</td>
+                                            <td>Control anual de Hipertensión</td>
+                                            <td>
+                                                <a href="ficha-consulta.html" class="btn btn-sm btn-info" title="Continuar Edición de Diagnóstico">
+                                                        <i class="fas fa-pencil-alt me-1"></i> Continuar Ficha
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <!-- CITA 2: En curso (Ya se está llenando el diagnóstico/tratamiento) -->
+                                        <tr>
+                                            <td>CT002</td>
+                                            <td>11:30 AM</td>
+                                            <td>Juan Pérez</td>
+                                            <td>Dolor de cabeza agudo</td>
+                                            <td>
+                                                <!-- Botón Finalizar (Usa Formulario POST y recarga) -->
+                                                <form method="POST" action="scripts/finalizar_cita.php" style="display:inline;" onsubmit="return confirm('¿Confirma que la cita ha finalizado? La información quedará registrada en el Historial Clínico.');">
+                                                    <input type="hidden" name="cita_id" value="CT002">
+                                                    <!-- Se cambia a continuar la edición de la ficha -->
+                                                    <a href="ficha-consulta.html" class="btn btn-sm btn-info" title="Continuar Edición de Diagnóstico">
+                                                        <i class="fas fa-pencil-alt me-1"></i> Continuar Ficha
+                                                    </a>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
