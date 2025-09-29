@@ -1,13 +1,36 @@
+<?php
+require_once __DIR__ . '/../backend/controllers/AuthController.php';
+require_once __DIR__ . '/../backend/helpers/session.php';
+
+session_boot();
+
+$error = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    if ($username === '' || $password === '') {
+        $error = 'Ingresa usuario y contraseña.';
+    } else {
+        $auth = new AuthController();
+        if ($auth->login($username, $password)) {
+            $user = current_user();
+            redirect_by_role((int)$user['role_id']);
+        } else {
+            $error = 'Credenciales inválidas o usuario inactivo.';
+        }
+    }
+}
+?>
 <!doctype html>
-<html lang="en">
+<html lang="es">
 
     <head>
 
         <meta charset="utf-8" />
-        <title>Login | Minia - Minimal Admin & Dashboard Template</title>
+        <title>Login | Clínica Moya</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-        <meta content="Themesbrand" name="author" />
+        <meta content="Clínica Moya" name="author" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="../assets/images/favicon.ico">
 
@@ -25,7 +48,7 @@
 
     <body>
 
-    <!-- <body data-layout="horizontal"> -->
+        <!-- <body data-layout="horizontal"> -->
         <div class="auth-page">
             <div class="container-fluid p-0">
                 <div class="row g-0">
@@ -34,8 +57,8 @@
                             <div class="w-100">
                                 <div class="d-flex flex-column h-100">
                                     <div class="mb-4 mb-md-5 text-center">
-                                        <a href="index.html" class="d-block auth-logo">
-                                            <img src="assets/images/logo-sm.svg" alt="" height="28"> <span class="logo-txt">Clínica Moya</span>
+                                        <a href="../index.html" class="d-block auth-logo">
+                                            <img src="../assets/images/logo-sm.svg" alt="" height="28"> <span class="logo-txt">Clínica Moya</span>
                                         </a>
                                     </div>
                                     <div class="auth-content my-auto">
@@ -43,10 +66,15 @@
                                             <h5 class="mb-0">Bienvenido de nuevo !</h5>
                                             <p class="text-muted mt-2">Inicia Sesión para continuar.</p>
                                         </div>
-                                        <form class="mt-4 pt-2" action="index.html">
+                                        <?php if ($error): ?>
+                                            <div class="alert alert-danger" role="alert">
+                                                <?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <form class="mt-4 pt-2" method="post" action="">
                                             <div class="mb-3">
                                                 <label class="form-label">Nombre de Usuario</label>
-                                                <input type="text" class="form-control" id="username" placeholder="Enter username">
+                                                <input type="text" name="username" class="form-control" id="username" placeholder="Ingresa usuario o email" required>
                                             </div>
                                             <div class="mb-3">
                                                 <div class="d-flex align-items-start">
@@ -59,9 +87,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
                                                 <div class="input-group auth-pass-inputgroup">
-                                                    <input type="password" class="form-control" placeholder="Enter password" aria-label="Password" aria-describedby="password-addon">
+                                                    <input type="password" name="password" class="form-control" placeholder="Ingresa contraseña" aria-label="Password" aria-describedby="password-addon" required>
                                                     <button class="btn btn-light shadow-none ms-0" type="button" id="password-addon"><i class="mdi mdi-eye-outline"></i></button>
                                                 </div>
                                             </div>
@@ -74,10 +101,9 @@
                                                         </label>
                                                     </div>  
                                                 </div>
-                                                
-                                            </div>
-                                            <div class="mb-3">
-                                                <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Acceso</button>
+                                                <div class="col-auto">
+                                                    <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Acceso</button>
+                                                </div>
                                             </div>
                                         </form>
                                     </div>
@@ -144,18 +170,17 @@
             <!-- end container fluid -->
         </div>
 
-
         <!-- JAVASCRIPT -->
-        <script src="assets/libs/jquery/jquery.min.js"></script>
-        <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="assets/libs/metismenu/metisMenu.min.js"></script>
-        <script src="assets/libs/simplebar/simplebar.min.js"></script>
-        <script src="assets/libs/node-waves/waves.min.js"></script>
-        <script src="assets/libs/feather-icons/feather.min.js"></script>
+        <script src="../assets/libs/jquery/jquery.min.js"></script>
+        <script src="../assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="../assets/libs/metismenu/metisMenu.min.js"></script>
+        <script src="../assets/libs/simplebar/simplebar.min.js"></script>
+        <script src="../assets/libs/node-waves/waves.min.js"></script>
+        <script src="../assets/libs/feather-icons/feather.min.js"></script>
         <!-- pace js -->
-        <script src="assets/libs/pace-js/pace.min.js"></script>
+        <script src="../assets/libs/pace-js/pace.min.js"></script>
         <!-- password addon init -->
-        <script src="assets/js/pages/pass-addon.init.js"></script>
+        <script src="../assets/js/pages/pass-addon.init.js"></script>
 
     </body>
 

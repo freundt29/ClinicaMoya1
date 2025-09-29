@@ -3,73 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion de Usuario</title>
+    <title>Registro de Personal Médico</title>
+    <!-- Carga de Bootstrap (Solo se usa Bootstrap) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
-    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
-    <link href="assets/css/style.css" rel="stylesheet">
-     <style>
-        .texto-color{
-            color: #1034a6 !important;
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <style>
+        /* Estilos generales */
+        body.bg-info {
+            background-color: #1034a6 !important;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        /* Clase Bootstrap 5 equivalente a rounded-xl */
+        section.shadow {
+            max-width: 1200px;
+            width: 100%;
         }
     </style>
 </head>
 <body class="bg-info">
-    <section class="p-5 bg-light shadow">
-        <h3 class="text-dark">Gestión de Usuarios</h3>
+    <!-- Usando 'rounded-3' de Bootstrap en lugar de 'rounded-xl' de Tailwind -->
+    <section class="p-5 bg-light shadow rounded-3">
+        <h3 class="text-dark">Gestión de Personal Médico</h3>
+        <p class="text-muted">Administración y edición de los datos del personal.</p>
         
-        <div class="d-flex justify-content-between mb-3 align-items-center">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario"><i class="fas fa-user-plus me-2"></i> Crear Nuevo Usuario</button>
-            <input type="search" class="form-control w-50" placeholder="Buscar por nombre, email o ID...">
+        <!-- Controles: Botón y Búsqueda -->
+        <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center">
+            <button class="btn btn-primary mb-2 mb-md-0" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario"><i class="fas fa-user-md me-2"></i> Registrar Nuevo Médico</button>
+            
+            <!-- Usando col-md-4 para el ancho en pantallas grandes -->
+            <div class="col-md-4 col-12 ms-md-auto"> 
+                <input type="search" class="form-control" placeholder="Buscar por nombre, email o ID...">
+            </div>
         </div>
         
-        <div class="table-responsive">
+        <!-- Tabla de Médicos -->
+        <div class="table-responsive rounded-3">
             <table class="table table-bordered table-hover align-middle">
                 <thead class="table-secondary">
                     <tr>
                         <th>ID</th> 
                         <th>Nombre Completo</th>
                         <th>Email</th>
-                        <th>Rol</th>
-                        <th>Acciones</th>
+                        <th>Acciones</th> 
                     </tr>
                 </thead>
 
                 <tbody>
+                    <!-- EJEMPLO DE ADMINISTRADOR (El ID ya no se pasa por JS, solo abre el modal) -->
                     <tr>
                         <td>1001</td>
                         <td>Valeria Gomez</td>
                         <td>valeria@hospital.com</td>
-                        <td><span class="badge bg-danger">Administrador</span></td>
                         <td>
+                            <!-- Se eliminó el onclick JS. Solo usa data-bs-target para abrir el modal -->
+                            <button class="btn btn-sm btn-outline-primary" 
+                                title="Editar Datos"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modalEditarUsuario"> 
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- EJEMPLO DE MÉDICO -->
+                    <tr>
+                        <td>2005</td>
+                        <td>Dr. Alejandro Ríos</td>
+                        <td>arios@hospital.com</td>
+                        <td>
+                            <!-- Se eliminó el onclick JS. Solo usa data-bs-target para abrir el modal -->
                             <button class="btn btn-sm btn-outline-primary" 
                                 title="Editar Datos"
                                 data-bs-toggle="modal" 
                                 data-bs-target="#modalEditarUsuario">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-warning" 
-                                title="Restablecer Contraseña"
-                                data-id-usuario="1001" 
-                                onclick="restablecerContrasena(this.getAttribute('data-id-usuario'))">
-                                <i class="fas fa-key"></i>
-                            </button>
                         </td>
                     </tr>
-
                 </tbody>
             </table>
-
         </div>
         
+        <!-- Paginación -->
         <div class="d-flex justify-content-end mt-4">
             <nav aria-label="Page navigation example">
                 <ul class="pagination">
                     <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
                     <li class="page-item active"><a class="page-link" href="#">1</a></li>
                     <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
                     <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
                 </ul>
             </nav>
@@ -77,20 +102,22 @@
 
     </section>
     
+    <!-- MODAL: CREAR NUEVO MÉDICO -->
     <div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="crearUsuarioLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg"> <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="crearUsuarioLabel"><i class="fas fa-user-plus me-2"></i> Registrar Nuevo Usuario</h5>
+    <div class="modal-dialog modal-lg"> 
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white rounded-top">
+                <h5 class="modal-title" id="crearUsuarioLabel"><i class="fas fa-user-md me-2"></i> Registrar Nuevo Médico</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
+            <!-- El 'action' y el 'method' deberán ser definidos por el backend -->
             <form id="formCrearUsuario">
                 <div class="modal-body">
-                    
-                    <h6 class="mb-3 texto-color">Información Básica</h6>
+                    <h6 class="mb-3 text-primary"><i class="fas fa-info-circle me-1"></i> Información Básica</h6>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="nombreUsuario" class="form-label">Nombre Completo</label>
+                            <label for="nombreUsuario" class="form-label">Nombre Completo del Médico</label>
                             <input type="text" class="form-control" id="nombreUsuario" required>
                         </div>
                         <div class="col-md-6">
@@ -98,54 +125,86 @@
                             <input type="text" class="form-control" id="cedulaUsuario" required>
                         </div>
                     </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="especialidadMedico" class="form-label">Especialidad</label>
+                            <select class="form-select" id="especialidadMedico" required>
+                                <option value="" selected disabled>Seleccione una especialidad</option>
+                                <option value="anestesiologia">Anestesiología</option>
+                                <option value="cardiologia">Cardiología</option>
+                                <option value="dermatologia">Dermatología</option>
+                                <option value="ginecologia">Ginecología</option>
+                                <option value="medicina_interna">Medicina Interna</option>
+                                <option value="oftalmologia">Oftalmología</option>
+                                <option value="psiquiatria">Psiquiatría</option>
+                            </select>
+                        </div>
+                    </div>
 
-                    <h6 class="mb-3 texto-color">Datos de Acceso</h6>
+                    <hr>
+                    <h6 class="mb-3 text-success"><i class="fas fa-clock me-1"></i> Horario y Disponibilidad</h6>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Días de Atención (Seleccione al menos uno)</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="diaLunes" value="Lunes"><label class="form-check-label" for="diaLunes">Lunes</label></div>
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="diaMartes" value="Martes"><label class="form-check-label" for="diaMartes">Martes</label></div>
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="diaMiercoles" value="Miércoles"><label class="form-check-label" for="diaMiercoles">Miércoles</label></div>
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="diaJueves" value="Jueves"><label class="form-check-label" for="diaJueves">Jueves</label></div>
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="diaViernes" value="Viernes"><label class="form-check-label" for="diaViernes">Viernes</label></div>
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="diaSabado" value="Sábado"><label class="form-check-label" for="diaSabado">Sábado</label></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Rango Horario de Atención</label>
+                            <div class="input-group">
+                                <input type="time" class="form-control" id="horaInicio" required value="08:00" min="07:00" max="18:00">
+                                <span class="input-group-text">a</span>
+                                <input type="time" class="form-control" id="horaFin" required value="17:00" min="07:00" max="18:00">
+                            </div>
+                            <small class="text-muted">El horario debe estar entre las 07:00 AM y las 06:00 PM.</small>
+                            <!-- Este div de error ya no es funcional sin JS, pero se mantiene por estructura -->
+                            <div id="horarioError" class="text-danger small mt-1" style="display:none;"></div>
+                        </div>
+                    </div>
+                    <!-- FIN DEL APARTADO DE HORARIO -->
+
+                    <hr>
+                    <h6 class="mb-3 text-primary"><i class="fas fa-lock me-1"></i> Datos de Acceso</h6>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="emailUsuario" class="form-label">Email</label>
                             <input type="email" class="form-control" id="emailUsuario" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="passwordUsuario" class="form-label">Contraseña Temporal</label>
-                            <input type="password" class="form-control" id="passwordUsuario" placeholder="Se recomienda una temporal" required>
-                        </div>
-                    </div>
-
-                    <h6 class="mb-3 texto-color">Asignación de Rol</h6>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="rolUsuario" class="form-label">Rol</label>
-                            <select class="form-select" id="rolUsuario" required>
-                                <option value="" selected disabled>Selecciona un rol</option>
-                                <option value="paciente">Paciente</option>
-                                <option value="medico">Médico</option>
-                                <option value="admin">Administrador</option>
-                            </select>
                         </div>
                     </div>
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-save me-2"></i> Guardar Usuario</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save me-2"></i> Guardar Médico</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<!-- MODAL: EDITAR DATOS DE USUARIO -->
 <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="editarUsuarioLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header bg-primary text-white rounded-top">
                 <h5 class="modal-title" id="editarUsuarioLabel"><i class="fas fa-edit me-2"></i> Editar Datos de Usuario</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
+            <!-- El 'action' y el 'method' deberán ser definidos por el backend -->
             <form id="formEditarUsuario">
                 <div class="modal-body">
                     <input type="hidden" id="editUsuarioId" name="usuario_id"> 
                     
-                    <h6 class="mb-3 text-primary">Información Básica</h6>
+                    <h6 class="mb-3 text-primary"><i class="fas fa-info-circle me-1"></i> Información Básica</h6>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="editNombreUsuario" class="form-label">Nombre Completo</label>
@@ -153,31 +212,63 @@
                         </div>
                         <div class="col-md-6">
                             <label for="editCedulaUsuario" class="form-label">ID / Cédula</label>
+                            <!-- El campo se deja 'readonly' esperando la carga de datos del backend -->
                             <input type="text" class="form-control" id="editCedulaUsuario" readonly> 
                         </div>
                     </div>
 
-                    <h6 class="mb-3 text-primary">Datos de Contacto y Acceso</h6>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="editEmailUsuario" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="editEmailUsuario" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="editTelefonoUsuario" class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="editTelefonoUsuario">
-                        </div>
-                    </div>
-
-                    <h6 class="mb-3 text-primary">Asignación de Rol</h6>
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label for="editRolUsuario" class="form-label">Rol</label>
-                            <select class="form-select" id="editRolUsuario" required>
-                                <option value="paciente">Paciente</option>
-                                <option value="medico">Médico</option>
-                                <option value="admin">Administrador</option>
+                            <label for="editEspecialidadMedico" class="form-label">Especialidad</label>
+                            <select class="form-select" id="editEspecialidadMedico" required>
+                                <option value="" selected disabled>Seleccione una especialidad</option>
+                                <option value="anestesiologia">Anestesiología</option>
+                                <option value="cardiologia">Cardiología</option>
+                                <option value="dermatologia">Dermatología</option>
+                                <option value="ginecologia">Ginecología</option>
+                                <option value="medicina_interna">Medicina Interna</option>
+                                <option value="oftalmologia">Oftalmología</option>
+                                <option value="psiquiatria">Psiquiatría</option>
                             </select>
+                        </div>
+                    </div>
+                    
+                    <!-- HORARIO DE EDICIÓN -->
+                    <hr>
+                    <h6 class="mb-3 text-success"><i class="fas fa-clock me-1"></i> Horario de Atención</h6>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Días de Atención</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="editDiaLunes" value="Lunes"><label class="form-check-label" for="editDiaLunes">Lunes</label></div>
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="editDiaMartes" value="Martes"><label class="form-check-label" for="editDiaMartes">Martes</label></div>
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="editDiaMiercoles" value="Miércoles"><label class="form-check-label" for="editDiaMiercoles">Miércoles</label></div>
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="editDiaJueves" value="Jueves"><label class="form-check-label" for="editDiaJueves">Jueves</label></div>
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="editDiaViernes" value="Viernes"><label class="form-check-label" for="editDiaViernes">Viernes</label></div>
+                                <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="editDiaSabado" value="Sábado"><label class="form-check-label" for="editDiaSabado">Sábado</label></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Rango Horario de Atención</label>
+                            <div class="input-group">
+                                <input type="time" class="form-control" id="editHoraInicio" required min="07:00" max="18:00">
+                                <span class="input-group-text">a</span>
+                                <input type="time" class="form-control" id="editHoraFin" required min="07:00" max="18:00">
+                            </div>
+                            <small class="text-muted">El horario debe estar entre las 07:00 AM y las 06:00 PM.</small>
+                            <!-- Este div de error ya no es funcional sin JS, pero se mantiene por estructura -->
+                            <div id="editHorarioError" class="text-danger small mt-1" style="display:none;"></div>
+                        </div>
+                    </div>
+                    <!-- FIN DEL HORARIO DE EDICIÓN -->
+
+                    <hr>
+                    <h6 class="mb-3 text-primary"><i class="fas fa-at me-1"></i> Datos de Contacto</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="editEmailUsuario" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmailUsuario" required>
                         </div>
                     </div>
 
@@ -191,37 +282,7 @@
     </div>
 </div>
 
+<!-- Script de Bootstrap para el funcionamiento de Modals y componentes -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    function restablecerContrasena(userId) {
-        // Paso 1: Confirmación de Seguridad
-        const confirmar = confirm(`¿Estás seguro de que deseas restablecer la contraseña para el usuario con ID: ${userId}? Esto generará una nueva clave.`);
-
-        if (confirmar) {
-            // Si el administrador confirma, se simula el proceso de seguridad.
-            
-            // 🚨 Aquí iría el código AJAX (Asíncrono) 🚨
-            // que llama a tu servidor (backend) para:
-            // 1. Generar la nueva contraseña.
-            // 2. Encriptarla y guardarla en la base de datos.
-            // 3. Enviar un correo de notificación al usuario.
-            
-            // --- SIMULACIÓN (Reemplazar con código real del servidor) ---
-            
-            // Simulamos una demora de 1.5 segundos para la respuesta del servidor
-            setTimeout(() => {
-                // Paso 4: Retroalimentación Visual de Éxito
-                alert(`¡Éxito! La contraseña del usuario ${userId} ha sido restablecida. Se ha enviado una notificación al correo electrónico del usuario.`);
-                // Opcionalmente, podrías cambiar el contenido de la celda 'Último Acceso'
-            }, 1500);
-            
-            // --- FIN DE LA SIMULACIÓN ---
-            
-        } else {
-            // Si el administrador cancela.
-            console.log(`Restablecimiento de contraseña cancelado para el usuario ${userId}.`);
-        }
-    }
-</script>
 </body>
 </html>
