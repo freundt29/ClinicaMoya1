@@ -45,7 +45,7 @@ $list = $app->getPatientAppointments((int)$user['id']);
   <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
     <div class="container-fluid px-4">
       <a class="navbar-brand d-flex align-items-center" href="../index.html">
-        <img src="../assets/images/logo-sm.svg" alt="" height="24" class="me-2"> <span>Clínica Moya</span>
+        <img src="../assets/images/logoMoya.png" alt="" height="34" class="me-2"> <span>Clínica Moya</span>
       </a>
       <div class="d-flex align-items-center gap-2">
         <a href="reservar-cita.php" class="btn btn-outline-primary btn-sm">Reservar cita</a>

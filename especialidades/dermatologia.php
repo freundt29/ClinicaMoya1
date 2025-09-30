@@ -6,7 +6,7 @@ function _norm_derma(string $s): string {
   $rep = ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ñ'=>'n','ü'=>'u'];
   return preg_replace('/\s+/', '', strtr($s, $rep));
 }
-$specName = 'Dermatologia'; // en BD sin tilde
+$specName = 'Dermatología';
 $specId = isset($_GET['sid']) ? (int)$_GET['sid'] : 0; // permitir forzar por querystring
 if ($specId <= 0) {
   $target = _norm_derma($specName);

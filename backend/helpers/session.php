@@ -107,7 +107,7 @@ function redirect_by_role(int $roleId): void {
     // 1=admin, 2=doctor, 3=paciente
     switch ($roleId) {
         case 1:
-            header('Location: /proyecto1moya/admin/dashboard-admin.html');
+            header('Location: /proyecto1moya/admin/dashboard-admin.php');
             break;
         case 2:
             header('Location: /proyecto1moya/doctores/citas.php');

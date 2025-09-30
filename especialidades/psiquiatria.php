@@ -46,17 +46,17 @@ $doctors = $specId ? $app->getDoctorsBySpecialty($specId) : [];
                 <ul class="nav nav-pills nav-justified mb-4" id="pills-tab" role="tablist">
                     <li class="mx-2 nav-item" role="presentation">
                         <a class="nav-link active fw-bold" id="pills-intro-tab" data-toggle="pill" href="#pills-intro" role="tab" aria-controls="pills-intro" aria-selected="true" style="background-color: #1034a6; color: white;">
-                            <i class="mdi mdi-information-outline me-2"></i> ¿Qué es?
+                             ¿Qué es?
                         </a>
                     </li>
                     <li class="mx-2 nav-item" role="presentation">
                         <a class="nav-link fw-bold" id="pills-servicios-tab" data-toggle="pill" href="#pills-servicios" role="tab" aria-controls="pills-servicios" aria-selected="false" style="background-color: #1034a6; color: white;"> 
-                            <i class="mdi mdi-stethoscope me-2"></i> Servicios
+                             Servicios
                         </a>
                     </li>
                     <li class="mx-2 nav-item" role="presentation">
                         <a class="nav-link fw-bold text-clinic-blue" id="pills-medicos-tab" data-toggle="pill" href="#pills-medicos" role="tab" aria-controls="pills-medicos" aria-selected="false" style="background-color: #1034a6; color: white;">
-                            <i class="mdi mdi-doctor me-2"></i> Psiquiatras
+                             Psiquiatras
                         </a>
                     </li>
                 </ul>
@@ -116,7 +116,12 @@ $doctors = $specId ? $app->getDoctorsBySpecialty($specId) : [];
                                   <div class="col-md-6 mb-3 mb-md-0">
                                     <h4 class="fw-bold text-clinic-blue mb-1"><?php echo htmlspecialchars($d['full_name'], ENT_QUOTES, 'UTF-8'); ?></h4>
                                     <p class="text-info fw-bold mb-1">Especialista en <?php echo htmlspecialchars($specName, ENT_QUOTES, 'UTF-8'); ?></p>
-                                    <p class="text-muted small mb-0">Agenda una cita con el especialista.</p>
+                                    <?php if (!empty($d['bio'])): ?>
+                                      <p class="text-muted small mb-1"><?php echo htmlspecialchars($d['bio'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                    <?php endif; ?>
+                                    <?php if (!empty($d['years_experience']) && $d['years_experience'] > 0): ?>
+                                      <p class="text-muted small mb-0"><i class="mdi mdi-briefcase-outline me-1"></i><?php echo (int)$d['years_experience']; ?>+ años de experiencia</p>
+                                    <?php endif; ?>
                                   </div>
                                   <div class="col-md-4 text-md-end">
                                     <a class="btn btn-primary" href="../public/reservar-cita.php?doctor=<?php echo (int)$d['id']; ?>&sid=<?php echo (int)$specId; ?>">Reservar</a>

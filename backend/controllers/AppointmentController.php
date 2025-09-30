@@ -115,7 +115,7 @@ class AppointmentController {
 
     public function getDoctorsBySpecialty(int $specialtyId): array {
         $pdo = db();
-        $sql = "SELECT d.user_id AS id, u.full_name
+        $sql = "SELECT d.user_id AS id, u.full_name, u.email, d.years_experience, d.bio
                 FROM doctor_specialty ds
                 INNER JOIN doctors d ON d.user_id = ds.doctor_id
                 INNER JOIN users u ON u.id = d.user_id

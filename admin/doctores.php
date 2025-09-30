@@ -24,6 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = trim($_POST['username'] ?? '');
             $email = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
+            $yearsExp = isset($_POST['years_experience']) ? (int)$_POST['years_experience'] : 0;
+            $bio = trim($_POST['bio'] ?? '');
             $specs = $_POST['specialties'] ?? [];
             if ($full === '') { $errors['full_name'] = 'Ingresa el nombre completo'; }
             if ($username === '') { $errors['username'] = 'Ingresa el usuario'; }
@@ -32,6 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($password !== '' && strlen($password) < 8) { $errors['password'] = 'La contraseña debe tener al menos 8 caracteres'; }
             if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) { $errors['email'] = 'Email inválido'; }
             if ($email !== '' && !preg_match('/^[^@\s]+@[^@\s]+\.com$/i', $email)) { $errors['email'] = 'El email debe terminar en .com'; }
+            if ($yearsExp < 0 || $yearsExp > 50) { $errors['years_experience'] = 'Los años de experiencia deben estar entre 0 y 50'; }
+            if ($bio === '') { $errors['bio'] = 'Ingresa una descripción profesional'; }
+            if ($bio !== '' && strlen($bio) > 500) { $errors['bio'] = 'La descripción no puede exceder 500 caracteres'; }
 
             // Validación de duplicados (username/email)
             $pdo = db();
@@ -75,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if (empty($errors)) {
-                $uid = $users->createDoctor($full, $username, $email, $password, null, $specs);
+                $uid = $users->createDoctor($full, $username, $email, $password, null, $specs, $yearsExp, $bio);
                 if (!empty($ranges)) { $users->setDoctorAvailability($uid, $ranges); }
                 flash_set('success', 'Doctor creado (ID ' . (int)$uid . ')');
                 header('Location: doctores.php');
@@ -122,10 +127,10 @@ $list = $users->listDoctors();
   <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
     <div class="container-fluid px-4">
       <a class="navbar-brand d-flex align-items-center" href="dashboard-admin.html">
-        <img src="../assets/images/logo-sm.svg" alt="" height="24" class="me-2"> <span>Clínica Moya</span>
+      <img src="../assets/images/logoMoya.png" alt="" height="40" class="me-2"> 
       </a>
       <div class="d-flex align-items-center gap-2">
-        <a class="btn btn-outline-secondary btn-sm" href="dashboard-admin.html">Dashboard</a>
+        <a class="btn btn-outline-secondary btn-sm" href="dashboard-admin.php">Dashboard</a>
         <a class="btn btn-outline-danger btn-sm" href="../public/logout.php">Salir</a>
       </div>
     </div>
@@ -163,6 +168,20 @@ $list = $users->listDoctors();
                 <input type="text" name="password" class="form-control <?php echo isset($errors['password'])?'is-invalid':''; ?>" required minlength="8" title="Mínimo 8 caracteres" value="<?php echo htmlspecialchars($_POST['password'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="form-text">Mínimo 8 caracteres. Compártela al doctor para su primer acceso.</div>
                 <?php if (isset($errors['password'])): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['password'], ENT_QUOTES, 'UTF-8'); ?></div><?php endif; ?>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Años de experiencia</label>
+                <input type="number" name="years_experience" class="form-control <?php echo isset($errors['years_experience'])?'is-invalid':''; ?>" min="0" max="50" value="<?php echo htmlspecialchars($_POST['years_experience'] ?? '0', ENT_QUOTES, 'UTF-8'); ?>">
+                <div class="form-text">Años de experiencia profesional del doctor (0-50 años)</div>
+                <?php if (isset($errors['years_experience'])): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['years_experience'], ENT_QUOTES, 'UTF-8'); ?></div><?php endif; ?>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Descripción profesional</label>
+                <textarea name="bio" class="form-control <?php echo isset($errors['bio'])?'is-invalid':''; ?>" rows="3" required maxlength="500" placeholder="Ej: Especialista en cirugía refractiva y córnea. Experto en procedimientos LASIK, PRK y trasplante de córnea."><?php echo htmlspecialchars($_POST['bio'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                <div class="form-text">Breve descripción del área de especialización del doctor (máximo 500 caracteres)</div>
+                <?php if (isset($errors['bio'])): ?><div class="invalid-feedback"><?php echo htmlspecialchars($errors['bio'], ENT_QUOTES, 'UTF-8'); ?></div><?php endif; ?>
               </div>
               
               <div class="mb-3">

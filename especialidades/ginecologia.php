@@ -6,7 +6,7 @@ function _norm_gyn(string $s): string {
   $rep = ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ñ'=>'n','ü'=>'u'];
   return preg_replace('/\s+/', '', strtr($s, $rep));
 }
-$specName = 'Ginecología'; // en BD sin tilde
+$specName = 'Ginecología';
 $target = _norm_gyn($specName);
 $specId = 0;
 foreach ($app->getSpecialties() as $s) {

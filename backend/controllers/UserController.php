@@ -20,7 +20,7 @@ class UserController {
         return $st->fetchAll();
     }
 
-    public function createDoctor(string $fullName, string $username, string $email, string $password, ?string $licenseNumber, array $specialtyIds): int {
+    public function createDoctor(string $fullName, string $username, string $email, string $password, ?string $licenseNumber, array $specialtyIds, int $yearsExperience = 0, ?string $bio = null): int {
         $pdo = db();
         $pdo->beginTransaction();
         try {
@@ -36,9 +36,9 @@ class UserController {
             ]);
             $userId = (int)$pdo->lastInsertId();
 
-            // Crear perfil doctor
-            $insDoc = $pdo->prepare("INSERT INTO doctors (user_id, license_number) VALUES (:id, :lic)");
-            $insDoc->execute([':id' => $userId, ':lic' => $licenseNumber]);
+            // Crear perfil doctor con años de experiencia y bio
+            $insDoc = $pdo->prepare("INSERT INTO doctors (user_id, license_number, years_experience, bio) VALUES (:id, :lic, :years, :bio)");
+            $insDoc->execute([':id' => $userId, ':lic' => $licenseNumber, ':years' => $yearsExperience, ':bio' => $bio]);
 
             // Especialidades
             if (!empty($specialtyIds)) {
@@ -64,29 +64,92 @@ class UserController {
         $st = $pdo->prepare("UPDATE users SET is_active = :a WHERE id = :id");
         return $st->execute([':a' => $active ? 1 : 0, ':id' => $userId]);
     }
+    
+    public function deleteUser(int $userId): bool {
+        $pdo = db();
+        // Soft delete: marcar como eliminado con timestamp
+        $st = $pdo->prepare("UPDATE users SET deleted_at = NOW() WHERE id = :id");
+        return $st->execute([':id' => $userId]);
+    }
 
     public function listUsers(?string $q = null, ?int $roleId = null, ?int $active = null): array {
         $pdo = db();
-        $where = [];
+        $where = ['u.deleted_at IS NULL']; // Excluir usuarios eliminados
         $params = [];
         if ($q) { $where[] = '(u.username LIKE :q OR u.email LIKE :q OR u.full_name LIKE :q)'; $params[':q'] = "%$q%"; }
         if ($roleId) { $where[] = 'u.role_id = :r'; $params[':r'] = $roleId; }
         if ($active !== null) { $where[] = 'u.is_active = :a'; $params[':a'] = $active; }
         $sql = "SELECT u.id, u.username, u.email, u.full_name, u.role_id, u.is_active
-                FROM users u";
-        if ($where) { $sql .= ' WHERE ' . implode(' AND ', $where); }
+                FROM users u
+                WHERE " . implode(' AND ', $where);
         $sql .= ' ORDER BY u.full_name';
         $st = $pdo->prepare($sql);
         $st->execute($params);
         return $st->fetchAll();
     }
 
-    public function createUser(string $fullName, string $username, string $email, string $password, int $roleId): int {
+    public function createUser(string $fullName, string $username, string $email, string $password, int $roleId, ?string $birthDate = null): int {
         if (!in_array($roleId, [1,3], true)) {
             throw new InvalidArgumentException('Este formulario solo crea Admins o Pacientes');
         }
-        if (strlen($password) < 8) { throw new InvalidArgumentException('Contraseña mínima 8 caracteres'); }
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { throw new InvalidArgumentException('Email inválido'); }
+        
+        // Validar nombre completo
+        $fullName = trim($fullName);
+        if (strlen($fullName) < 3 || strlen($fullName) > 100) {
+            throw new InvalidArgumentException('El nombre debe tener entre 3 y 100 caracteres');
+        }
+        if (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/', $fullName)) {
+            throw new InvalidArgumentException('El nombre solo puede contener letras y espacios');
+        }
+        
+        // Validar username
+        $username = trim($username);
+        if (strlen($username) < 4 || strlen($username) > 50) {
+            throw new InvalidArgumentException('El usuario debe tener entre 4 y 50 caracteres');
+        }
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
+            throw new InvalidArgumentException('El usuario solo puede contener letras, números y guión bajo');
+        }
+        
+        // Validar email
+        $email = trim($email);
+        if (strlen($email) > 120) {
+            throw new InvalidArgumentException('El email no puede exceder 120 caracteres');
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Email inválido');
+        }
+        if (!preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $email)) {
+            throw new InvalidArgumentException('El email debe contener @ y un dominio válido');
+        }
+        
+        // Validar contraseña
+        if (strlen($password) < 8 || strlen($password) > 255) {
+            throw new InvalidArgumentException('La contraseña debe tener entre 8 y 255 caracteres');
+        }
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*\d).+$/', $password)) {
+            throw new InvalidArgumentException('La contraseña debe incluir mayúscula, minúscula, letras y números');
+        }
+        
+        // Validar edad mínima para pacientes
+        if ($roleId === 3) {
+            if (empty($birthDate)) {
+                throw new InvalidArgumentException('La fecha de nacimiento es obligatoria');
+            }
+            $birth = DateTime::createFromFormat('Y-m-d', $birthDate);
+            if (!$birth) {
+                throw new InvalidArgumentException('Fecha de nacimiento inválida');
+            }
+            $today = new DateTime();
+            $age = $today->diff($birth)->y;
+            if ($age < 18) {
+                throw new InvalidArgumentException('Debes ser mayor de 18 años para registrarte');
+            }
+            if ($age > 100) {
+                throw new InvalidArgumentException('La edad máxima permitida es 100 años');
+            }
+        }
+        
         $pdo = db();
         // duplicados
         $st = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = :u');
@@ -101,8 +164,8 @@ class UserController {
         $ins->execute([':r'=>$roleId, ':u'=>$username, ':e'=>$email, ':ph'=>$hash, ':f'=>$fullName]);
         $id = (int)$pdo->lastInsertId();
         if ($roleId === 3) {
-            // crear perfil paciente si aplica
-            $pdo->prepare('INSERT IGNORE INTO patients (user_id) VALUES (:id)')->execute([':id'=>$id]);
+            // crear perfil paciente con fecha de nacimiento
+            $pdo->prepare('INSERT INTO patients (user_id, birth_date) VALUES (:id, :bd)')->execute([':id'=>$id, ':bd'=>$birthDate]);
         }
         return $id;
     }

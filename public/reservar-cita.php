@@ -9,7 +9,11 @@ require_role(3);
 $app = new AppointmentController();
 $specialties = $app->getSpecialties();
 
-$selectedSpecialty = isset($_GET['specialty']) ? (int)$_GET['specialty'] : 0;
+// Aceptar 'specialty' o 'sid' (specialty id)
+$selectedSpecialty = isset($_GET['specialty']) ? (int)$_GET['specialty'] : (isset($_GET['sid']) ? (int)$_GET['sid'] : 0);
+// Pre-seleccionar doctor si viene desde página de especialidad
+$selectedDoctor = isset($_GET['doctor']) ? (int)$_GET['doctor'] : 0;
+
 $doctors = [];
 if ($selectedSpecialty > 0) {
     $doctors = $app->getDoctorsBySpecialty($selectedSpecialty);
@@ -83,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
       <div class="container-fluid px-4">
         <a class="navbar-brand d-flex align-items-center" href="../index.html">
-          <img src="../assets/images/logo-sm.svg" alt="" height="24" class="me-2"> <span>Clínica Moya</span>
+          <img src="../assets/images/logoMoya.png" alt="" height="34" class="me-2"> <span>Clínica Moya</span>
         </a>
         <div class="d-flex align-items-center gap-2">
           <a class="btn btn-outline-primary btn-sm" href="mis-citas.php">Mis Citas</a>
@@ -137,7 +141,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <select class="form-select" id="medico" name="doctor_id" required <?php echo $selectedSpecialty ? '' : 'disabled'; ?>>
                     <option value="">Seleccione un médico</option>
                     <?php foreach ($doctors as $doc): ?>
-                      <option value="<?php echo (int)$doc['id']; ?>"><?php echo htmlspecialchars($doc['full_name'], ENT_QUOTES, 'UTF-8'); ?></option>
+                      <option value="<?php echo (int)$doc['id']; ?>" <?php echo $selectedDoctor == (int)$doc['id'] ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($doc['full_name'], ENT_QUOTES, 'UTF-8'); ?>
+                      </option>
                     <?php endforeach; ?>
                   </select>
                 </div>

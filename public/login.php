@@ -5,6 +5,7 @@ require_once __DIR__ . '/../backend/helpers/session.php';
 session_boot();
 
 $error = null;
+$success = flash_get('success');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -58,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="d-flex flex-column h-100">
                                     <div class="mb-4 mb-md-5 text-center">
                                         <a href="../index.html" class="d-block auth-logo">
-                                            <img src="../assets/images/logo-sm.svg" alt="" height="28"> <span class="logo-txt">Clínica Moya</span>
+                                            <img src="../assets/images/logoMoya.png" alt="" height="70"> <span class="logo-txt">Clínica Moya</span>
                                         </a>
                                     </div>
                                     <div class="auth-content my-auto">
@@ -66,6 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <h5 class="mb-0">Bienvenido de nuevo !</h5>
                                             <p class="text-muted mt-2">Inicia Sesión para continuar.</p>
                                         </div>
+                                        <?php if (!empty($success)): ?>
+                                            <div class="alert alert-success" role="alert">
+                                                <?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?>
+                                            </div>
+                                        <?php endif; ?>
                                         <?php if ($error): ?>
                                             <div class="alert alert-danger" role="alert">
                                                 <?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
@@ -83,14 +89,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     </div>
                                                     <div class="flex-shrink-0">
                                                         <div class="">
-                                                            <a href="../usuarios/recuperar-contrasena.html" class="text-muted">Has olvidado tu contraseña?</a>
+                                                            <a href="forgot-password.php" class="text-muted">¿Has olvidado tu contraseña?</a>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="input-group auth-pass-inputgroup">
                                                     <input type="password" name="password" class="form-control" placeholder="Ingresa contraseña" aria-label="Password" aria-describedby="password-addon" required>
                                                     <button class="btn btn-light shadow-none ms-0" type="button" id="password-addon"><i class="mdi mdi-eye-outline"></i></button>
-                                                </div>
+                                                </div>  
                                             </div>
                                             <div class="row mb-4">
                                                 <div class="col">
@@ -104,6 +110,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <div class="col-auto">
                                                     <button class="btn btn-primary w-100 waves-effect waves-light" type="submit">Acceso</button>
                                                 </div>
+                                            </div>
+                                            <div class="text-center">
+                                                <p class="text-muted mb-0">¿No tienes cuenta? <a href="/proyecto1moya/public/register.php" class="text-primary fw-semibold">Regístrate</a></p>
                                             </div>
                                         </form>
                                     </div>

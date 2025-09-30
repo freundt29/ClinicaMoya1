@@ -1,3 +1,22 @@
+<?php
+require_once __DIR__ . '/../backend/controllers/AppointmentController.php';
+$app = new AppointmentController();
+
+// Normalizar nombre para tolerar tildes/espacios
+function _norm_oftal(string $s): string {
+  $s = mb_strtolower($s, 'UTF-8');
+  $rep = ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ñ'=>'n','ü'=>'u'];
+  return preg_replace('/\s+/', '', strtr($s, $rep));
+}
+
+$specName = 'Oftalmología';
+$target = _norm_oftal($specName);
+$specId = 0;
+foreach ($app->getSpecialties() as $s) {
+  if (_norm_oftal($s['name']) === $target) { $specId = (int)$s['id']; break; }
+}
+$doctors = $specId ? $app->getDoctorsBySpecialty($specId) : [];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,23 +26,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <!-- App favicon -->
-    <link rel="shortcut icon" href="assets/images/favicon.ico">
+    <link href="../assets/images/favicon.ico" rel="shortcut icon">
 
         <!-- plugin css -->
-    <link href="assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
 
         <!-- preloader css -->
-    <link rel="stylesheet" href="assets/css/preloader.min.css" type="text/css" />
+    <link rel="stylesheet" href="../assets/css/preloader.min.css" type="text/css" />
 
         <!-- Bootstrap Css -->
-    <link href="assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
         <!-- Icons Css -->
-    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/icons.min.css" rel="stylesheet" type="text/css" />
         <!-- App Css-->
-    <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
     <style>
         .texto-color{
             color: #1034a6 !important;
@@ -39,24 +55,22 @@
                 <ul class="nav nav-pills nav-justified mb-4" id="pills-tab" role="tablist">
                     <li class="mx-2 nav-item" role="presentation">
                         <a class="nav-link active fw-bold" id="pills-intro-tab" data-toggle="pill" href="#pills-intro" role="tab" aria-controls="pills-intro" aria-selected="true" style="background-color: #1034a6; color: white;">
-                            <i class="mdi mdi-information-outline me-2"></i> ¿Qué es?
+                             ¿Qué es?
                         </a>
                     </li>
                     <li class="mx-2 nav-item" role="presentation">
-                        <a class="nav-link fw-bold" id="pills-servicios-tab" data-toggle="pill" href="#pills-servicios" role="tab" aria-controls="pills-servicios" aria-selected="false" style="background-color: #1034a6; color: white;""> 
-                            <i class="mdi mdi-stethoscope me-2"></i> Servicios y Cirugías
+                        <a class="nav-link fw-bold" id="pills-servicios-tab" data-toggle="pill" href="#pills-servicios" role="tab" aria-controls="pills-servicios" aria-selected="false" style="background-color: #1034a6; color: white;"> 
+                             Servicios y Cirugías
                         </a>
                     </li>
                     <li class="mx-2 nav-item" role="presentation">
                         <a class="nav-link fw-bold text-clinic-blue" id="pills-medicos-tab" data-toggle="pill" href="#pills-medicos" role="tab" aria-controls="pills-medicos" aria-selected="false" style="background-color: #1034a6; color: white;">
-                            <i class="mdi mdi-doctor me-2"></i> Oftalmólogos
+                             Oftalmólogos
                         </a>
                     </li>
                 </ul>
 
                 <div class="tab-content" id="pills-tabContent">
-
-                    <div class="tab-pane fade show active" id="pills-intro" role="tabpanel" aria-labelledby="pills-intro-tab">
                         <div class="card shadow-lg p-4">
                             <h5 class="card-title texto-color fw-bold">Visión Clara y Salud Ocular Completa</h5>
                             <p class="card-text text-muted">
@@ -91,65 +105,54 @@
                     </div>
 
                     <div class="tab-pane fade" id="pills-medicos" role="tabpanel" aria-labelledby="pills-medicos-tab">
-    <h5 class="mb-4 text-clinic-blue fw-bold">Conoce a Nuestros Oftalmólogos y Cirujanos Oculares</h5>
-
-    <div class="card shadow-lg mb-4 p-3 border-start border-5 border-primary">
-        <div class="row align-items-center">
-            
-            <div class="col-md-2 text-center mb-3 mb-md-0">
-                <div class="placeholder-img bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto" 
-                    style="width: 100px; height: 100px; font-size: 2.5rem; font-weight: bold;">
-                    RS
-                </div> 
-                
-            </div>
-            
-            <div class="col-md-6 mb-3 mb-md-0">
-                <h4 class="fw-bold text-clinic-blue mb-1">Dr. Ricardo Solís</h4>
-                <p class="text-info fw-bold mb-1">Especialista en Cirugía Refractiva y Córnea</p>
-                <p class="text-muted small mb-0">
-                    Experto en procedimientos LASIK, PRK y trasplante de córnea.
-                </p>
-                <div class="d-flex flex-column">
-                    <span class="small text-muted mb-1">
-                        <i class="mdi mdi-phone me-2 text-purple"></i> 
-                        <a href="tel:+582125551234" class="text-decoration-none text-muted fw-bold">
-                            +58 212 555 1234
-                        </a>
-                    </span>
-                    <span class="small text-muted">
-                        <i class="mdi mdi-email me-2 text-purple"></i> 
-                        <a href="mailto:lcardenas@clinica.com" class="text-decoration-none text-muted">
-                            lcardenas@clinica.com
-                        </a>
-                    </span>
-                </div>
-            </div>
-            
-            <div class="col-md-4 text-md-end">
-                <div class="mb-3">
-                    <span class="text-dark fw-bold">
-                        15+
-                    </span>
-                    <span class="text-muted">Años de experiencia</span>
+                        <h5 class="mb-4 text-clinic-blue fw-bold">Conoce a Nuestros Oftalmólogos y Cirujanos Oculares</h5>
+                        <?php if (!$specId): ?>
+                          <div class="alert alert-info">Especialidad no encontrada en el sistema.</div>
+                        <?php else: ?>
+                          <?php if (!$doctors): ?>
+                            <div class="alert alert-warning">No hay médicos activos registrados para esta especialidad.</div>
+                          <?php else: ?>
+                            <?php foreach ($doctors as $d): ?>
+                              <div class="card shadow-lg mb-4 p-3 border-start border-5 border-primary">
+                                <div class="row align-items-center">
+                                  <div class="col-md-2 text-center mb-3 mb-md-0">
+                                    <div class="placeholder-img bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                                        style="width: 100px; height: 100px; font-size: 2.5rem; font-weight: bold;">
+                                      <?php echo strtoupper(substr($d['full_name'], 0, 2)); ?>
+                                    </div>
+                                  </div>
+                                  <div class="col-md-6 mb-3 mb-md-0">
+                                    <h4 class="fw-bold text-clinic-blue mb-1"><?php echo htmlspecialchars($d['full_name'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                    <p class="text-info fw-bold mb-1">Especialista en <?php echo htmlspecialchars($specName, ENT_QUOTES, 'UTF-8'); ?></p>
+                                    <?php if (!empty($d['bio'])): ?>
+                                      <p class="text-muted small mb-1"><?php echo htmlspecialchars($d['bio'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                    <?php endif; ?>
+                                    <?php if (!empty($d['years_experience']) && $d['years_experience'] > 0): ?>
+                                      <p class="text-muted small mb-0"><i class="mdi mdi-briefcase-outline me-1"></i><?php echo (int)$d['years_experience']; ?>+ años de experiencia</p>
+                                    <?php endif; ?>
+                                  </div>
+                                  <div class="col-md-4 text-md-end">
+                                    <a class="btn btn-primary" href="../public/reservar-cita.php?doctor=<?php echo (int)$d['id']; ?>&sid=<?php echo (int)$specId; ?>">Reservar</a>
+                                  </div>
+                                </div>
+                              </div>
+                            <?php endforeach; ?>
+                          <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- JAVASCRIPT -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
-
-    <script src="assets/libs/metismenu/metisMenu.min.js"></script>
-    <script src="assets/libs/simplebar/simplebar.min.js"></script>
-    <script src="assets/libs/node-waves/waves.min.js"></script>
-    <script src="assets/libs/feather-icons/feather.min.js"></script>
-    <script src="assets/js/app.js"></script> 
-</body>
-</html>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<script src="../assets/libs/metismenu/metisMenu.min.js"></script>
+<script src="../assets/libs/simplebar/simplebar.min.js"></script>
+<script src="../assets/libs/node-waves/waves.min.js"></script>
+<script src="../assets/libs/feather-icons/feather.min.js"></script>
+<script src="../assets/js/app.js"></script> 
 </body>
 </html>

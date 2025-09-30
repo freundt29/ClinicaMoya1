@@ -48,6 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       flash_set('success', 'Estado actualizado');
       header('Location: gestion-usuario.php');
       exit;
+    } elseif ($action === 'delete') {
+      $uid = (int)($_POST['user_id'] ?? 0);
+      if ($uid > 0) {
+        $usersCtl->deleteUser($uid);
+        flash_set('success', 'Usuario eliminado correctamente');
+      } else {
+        flash_set('error', 'ID de usuario inválido');
+      }
+      header('Location: gestion-usuario.php');
+      exit;
     } elseif ($action === 'resetpwd') {
       $uid = (int)($_POST['user_id'] ?? 0);
       $new = $_POST['new_password'] ?? '';
@@ -84,8 +94,8 @@ $list = $usersCtl->listUsers($q ?: null, $roleFilter, $activeFilter);
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
     <div class="container-fluid px-4">
-      <a class="navbar-brand d-flex align-items-center" href="../admin/dashboard-admin.html">
-        <img src="../assets/images/logo-sm.svg" alt="" height="24" class="me-2"> <span>Clínica Moya</span>
+      <a class="navbar-brand d-flex align-items-center" href="../admin/dashboard-admin.php">
+      <img src="../assets/images/logoMoya.png" alt="" height="40" class="me-2"> 
       </a>
       <div class="d-flex align-items-center gap-2">
         <a class="btn btn-outline-secondary btn-sm" href="../admin/doctores.php">Gestionar doctores</a>
@@ -140,22 +150,32 @@ $list = $usersCtl->listUsers($q ?: null, $roleFilter, $activeFilter);
                     <td><?php echo (int)$row['role_id']===1?'Admin':((int)$row['role_id']===2?'Doctor':'Paciente'); ?></td>
                     <td><span class="badge bg-<?php echo ((int)$row['is_active']===1)?'success':'secondary'; ?>"><?php echo ((int)$row['is_active']===1)?'Activo':'Inactivo'; ?></span></td>
                     <td class="text-end">
-                      <form method="post" class="d-inline" onsubmit="return confirm('¿Cambiar estado de este usuario?');">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
-                        <input type="hidden" name="action" value="toggle">
-                        <input type="hidden" name="user_id" value="<?php echo (int)$row['id']; ?>">
-                        <input type="hidden" name="active" value="<?php echo ((int)$row['is_active']===1)?'0':'1'; ?>">
-                        <button class="btn btn-sm btn-outline-<?php echo ((int)$row['is_active']===1)?'secondary':'success'; ?>"><?php echo ((int)$row['is_active']===1)?'Desactivar':'Activar'; ?></button>
-                      </form>
-                      <?php // Reset password form ?>
-                      <form method="post" class="d-inline d-flex align-items-center gap-2 mt-2 mt-sm-0">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
-                        <input type="hidden" name="action" value="resetpwd">
-                        <input type="hidden" name="user_id" value="<?php echo (int)$row['id']; ?>">
-                        <input type="text" name="new_password" class="form-control form-control-sm <?php echo isset($errors['new_password_'.$row['id']])?'is-invalid':''; ?>" placeholder="Nueva contraseña" minlength="8" style="max-width:200px;">
-                        <button class="btn btn-sm btn-outline-primary">Reset</button>
-                        <?php if (isset($errors['new_password_'.$row['id']])): ?><div class="invalid-feedback d-block"><?php echo htmlspecialchars($errors['new_password_'.$row['id']], ENT_QUOTES, 'UTF-8'); ?></div><?php endif; ?>
-                      </form>
+                      <div class="d-flex flex-column gap-2">
+                        <div>
+                          <form method="post" class="d-inline" onsubmit="return confirm('¿Cambiar estado de este usuario?');">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="hidden" name="action" value="toggle">
+                            <input type="hidden" name="user_id" value="<?php echo (int)$row['id']; ?>">
+                            <input type="hidden" name="active" value="<?php echo ((int)$row['is_active']===1)?'0':'1'; ?>">
+                            <button class="btn btn-sm btn-outline-<?php echo ((int)$row['is_active']===1)?'secondary':'success'; ?>"><?php echo ((int)$row['is_active']===1)?'Desactivar':'Activar'; ?></button>
+                          </form>
+                          <form method="post" class="d-inline ms-1" onsubmit="return confirm('¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.');">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="user_id" value="<?php echo (int)$row['id']; ?>">
+                            <button class="btn btn-sm btn-outline-danger"><i class="mdi mdi-delete"></i> Eliminar</button>
+                          </form>
+                        </div>
+                        <?php // Reset password form ?>
+                        <form method="post" class="d-flex align-items-center gap-2">
+                          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
+                          <input type="hidden" name="action" value="resetpwd">
+                          <input type="hidden" name="user_id" value="<?php echo (int)$row['id']; ?>">
+                          <input type="text" name="new_password" class="form-control form-control-sm <?php echo isset($errors['new_password_'.$row['id']])?'is-invalid':''; ?>" placeholder="Nueva contraseña" minlength="8" style="max-width:200px;">
+                          <button class="btn btn-sm btn-outline-primary">Reset</button>
+                          <?php if (isset($errors['new_password_'.$row['id']])): ?><div class="invalid-feedback d-block"><?php echo htmlspecialchars($errors['new_password_'.$row['id']], ENT_QUOTES, 'UTF-8'); ?></div><?php endif; ?>
+                        </form>
+                      </div>
                     </td>
                   </tr>
                   <?php endforeach; ?>
